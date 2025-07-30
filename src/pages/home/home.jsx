@@ -5,12 +5,21 @@ import { CgLogOut } from "react-icons/cg";
 import { NavLink } from "react-router-dom";
 import "animate.css";
 import "./home.css";
-
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
+import { useTheme } from "../../Theme/ThemeContext";
+import { MdWbSunny } from "react-icons/md";
+import { FaMoon } from "react-icons/fa";
+
 function Home() {
+  const { theme, toggleTheme } = useTheme();
+  const styles = {
+    light: { background: "#fff", color: "#333" },
+    dark: { background: "#121212", color: "#fff" },
+  };
+
   const {
     transcript,
     listening,
@@ -20,17 +29,34 @@ function Home() {
 
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Personal");
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [imp, setImp] = useState(false);
+
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const savedTodos = JSON.parse(localStorage.getItem("Todos")) || [];
-    setTodos(savedTodos);
-  }, []);
+    const todoTexts = todos.map((todo) => todo.text);
+    localStorage.setItem("Todos", JSON.stringify(todoTexts));
+    console.log("todotexts:" + todoTexts);
+  }, [todos]);
 
   useEffect(() => {
-    localStorage.setItem("Todos", JSON.stringify(todos));
-  }, [todos]);
+    const savedTodoTexts = JSON.parse(localStorage.getItem("Todos"));
+    const restoredTodos = savedTodoTexts.map((text, index) => ({
+      id: Date.now() + index,
+      text,
+      completed: false,
+      category: "Work",
+    }));
+    setTodos(restoredTodos);
+
+    localStorage.setItem("abc", JSON.stringify(restoredTodos));
+
+    const a = JSON.parse(localStorage.getItem("abc"));
+    console.log("savedTodo: " + savedTodoTexts + " this is a " + a);
+  }, []);
 
   // Focus input on component mount
   useEffect(() => {
@@ -38,6 +64,11 @@ function Home() {
       inputRef.current.focus();
     }
   }, []);
+
+  //search todos
+  const filteredTodos = todos.filter((todo) =>
+    todo.text.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -87,12 +118,19 @@ function Home() {
     if (editingId === null) {
       setTodos([
         ...todos,
-        { id: Date.now(), text: transcript || inputValue, completed: false },
+        {
+          id: Date.now(),
+          text: transcript || inputValue,
+          completed: false,
+          category: selectedCategory,
+        },
       ]);
     } else {
       setTodos(
         todos.map((todo) =>
-          todo.id === editingId ? { ...todo, text: inputValue } : todo
+          todo.id === editingId
+            ? { ...todo, text: inputValue, category: selectedCategory }
+            : todo
         )
       );
       setEditingId(null);
@@ -102,15 +140,21 @@ function Home() {
     inputRef.current?.focus();
   };
 
+  //select category
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleimp = () => {
+    setImp(true);
+  };
+
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme}>
       <header className="app-header">
-        {/* <div className="keyboard-hints">
-          <span>
-            Press <kbd>Enter</kbd> to add | <kbd>/</kbd> to focus input |{" "}
-            <kbd>Ctrl+Space</kbd> for voice
-          </span>
-        </div> */}
+        <button onClick={toggleTheme}>
+          {theme === "light" ? <FaMoon /> : <MdWbSunny />}
+        </button>
 
         <button className="logout-btn">
           <NavLink to={"/"} className="logout-link">
@@ -120,8 +164,21 @@ function Home() {
         </button>
       </header>
 
-      <main className="todo-app animate__animated animate__fadeIn">
+      <main
+        className="todo-app animate__animated animate__fadeIn"
+        style={styles[theme]}
+      >
         <h1 className="app-title">Voice Todo App 🎙️</h1>
+
+        <div className="search-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search todos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
         <div className="voice-controls">
           <button
@@ -149,6 +206,29 @@ function Home() {
             onChange={(e) => setInputValue(e.target.value)}
           />
 
+          <div className="checkbox">
+            <input
+              type="checkbox"
+              // checked={todo.imp}
+              className="complete-checkbox"
+              onChange={handleimp}
+            />
+          </div>
+
+          <div className="category">
+            <select
+              className="category-select"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+            >
+              <option value="Personal">Personal</option>
+              <option value="Work">Work</option>
+              <option value="Home">Home</option>
+              <option value="Shopping">Shopping</option>
+            </select>
+            {/* {selectedGender && <p>Selected Gender: {selectedGender}</p>} */}
+          </div>
+
           <button
             className="add-btn"
             onClick={() => {
@@ -162,12 +242,16 @@ function Home() {
         </div>
 
         <ul className="todo-list">
-          {todos.map((todo) => (
+          {filteredTodos.map((todo) => (
             <div
-              className={`todo-item ${todo.completed ? "completed" : ""}`}
+              className={`todo-item ${todo.completed ? "completed" : ""} ${
+                setImp ? "red" : ""
+              }`}
               key={todo.id}
             >
               <li className="todo-text">{todo.text}</li>
+
+              <p className="todo-category">{todo.category}</p>
 
               <div className="todo-actions">
                 <input

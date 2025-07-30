@@ -11,6 +11,45 @@
   --border-radius: 4px;
   --transition: all 0.3s ease;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --green:#91eee0;
+}
+
+/* Dark Mode Specific Styles */
+[data-theme="dark"] {
+  --primary-color: #5C9DFF;
+  --primary-hover: #4A8AE6;
+  --text-color: #e0e0e0;
+  --light-gray: #2d2d2d;      /* Card background */
+  --medium-gray: #333;        /* Borders */
+  --dark-gray: #999;          /* Secondary text */
+  --shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  --green: #2E9C7E;           /* Category button */
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* Smoother transitions */
+.todo-item, 
+button, 
+input, 
+select {
+  transition: all 0.4s ease-in-out;
+}
+
+/* Placeholder text */
+[data-theme="dark"]::placeholder {
+  color: #777;
+}
+
+/* Todo items in dark mode */
+[data-theme="dark"] .todo-item {
+  background-color: #2d2d2d;
+  border-left: 3px solid #5C9DFF; /* Accent color */
+}
+
+/* Checkbox focus in dark mode */
+[data-theme="dark"] .complete-checkbox:focus {
+  box-shadow: 0 0 0 3px rgba(92, 157, 255, 0.3);
 }
 
 * {
@@ -31,8 +70,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 1rem;
-  max-width: 1200px;
+  /* padding: 1rem; */
+  /* max-width: 1200px; */
   margin: 0 auto;
 }
 
@@ -40,8 +79,7 @@ body {
 .app-header {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 0;
+  /* border: 2px solid var(--medium-gray); */
 }
 
 .logout-btn {
@@ -90,6 +128,27 @@ body {
   margin-bottom: 1.25rem;
   color: var(--text-color);
   font-size: 1.5rem;
+}
+
+/* Search container styles */
+.search-container {
+  margin: 20px 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #646cff;
 }
 
 /* Voice Controls */
@@ -162,6 +221,56 @@ body {
   box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
+.category-select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  background-color: white;
+  transition: var(--transition);
+}
+
+/* Category Button - Green Theme */
+.todo-category {
+  /* Colors */
+  background-color: #167457;  
+  color: white;               
+  
+  /* Shape & Size */
+  border: none;
+  border-radius: 18px;        
+  padding: 6px 12px;         
+  margin-right: 20px;          
+  
+  /* Typography */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
+  
+  /* Effects */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover & Active States */
+.todo-category:hover {
+  background-color: #3BB08F;  /* Slightly darker green */
+  transform: translateY(-1px); /* Subtle lift */
+}
+
+.todo-category:active {
+  background-color: #2E9C7E;  /* Deep teal-green */
+  transform: translateY(0);
+}
+
+/* Focus State (Accessibility) */
+.todo-category:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(69, 206, 162, 0.3); /* Glow effect */
+}
+
 .add-btn {
   padding: 0.75rem;
   background-color: var(--primary-color);
@@ -201,6 +310,10 @@ body {
 .todo-item.completed .todo-text {
   text-decoration: line-through;
   color: var(--dark-gray);
+}
+
+.todo-item.red {
+  background-color: var(--green);
 }
 
 .todo-text {

@@ -1,12 +1,8 @@
 <!-- dark mode
 
-Due Dates & Reminders – Set deadlines and get notifications.
+Priority Levels – checkbox with red bg.
 
-Priority Levels – High, Medium, Low (or color-coded).
-
-Categories/Tags – Organize tasks (Work, Personal, Shopping, etc.).
-
-Search & Filter – Find tasks quickly by name, date, or tag. -->
+Search & Filter – Find tasks quickly by date, or tag. -->
 
 
 <h1> ✅ React To-Do App with Authentication </h1>
@@ -18,7 +14,7 @@ A feature-rich to-do application with smooth animations, secure authentication, 
 - **Task Management**: Add, edit, complete, and delete tasks
 - **Persistent Storage**: Todos saved in browser's local storage
 - **Beautiful Animations**: Powered by Animate.css
-- **Secure Authentication**: Login system with Formik validation
+- **Secure Authentication**: Login system with validation
 - **Modern UI**: Clean interface with React Icons
 - **Client-Side Routing**: Smooth navigation between views
 
@@ -28,7 +24,6 @@ A feature-rich to-do application with smooth animations, secure authentication, 
 "dependencies": {
   "react": "^18.2.0",
   "react-router-dom": "^6.4.1",
-  "formik": "^2.4.1",
   "animate.css": "^4.1.1",
   "react-icons": "^4.11.0",
   "localforage": "^1.10.0"  # or alternative for local storage
@@ -40,11 +35,11 @@ A feature-rich to-do application with smooth animations, secure authentication, 
 **Prerequisites**
 
 - Node.js (v16+ recommended)
-- npm or yarn
+- npm 
 
 **Installation**
 ```bash
-git clone https://github.com/your-username/react-todo-app.git
+git clone https://github.com/Haniasahar/react-todo-app.git
 cd react-todo-app
 npm install
 npm start
@@ -65,7 +60,7 @@ npm start
 
 ## 🔐 Authentication
 
-- Formik for form handling and validation
+ - Formik for form handling and validation
 
 - Simple JWT or session-based auth
 

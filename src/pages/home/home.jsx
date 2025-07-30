@@ -13,6 +13,8 @@ import { useTheme } from "../../Theme/ThemeContext";
 import { MdWbSunny } from "react-icons/md";
 import { FaMoon } from "react-icons/fa";
 
+import { format } from 'date-fns';
+
 function Home() {
   const { theme, toggleTheme } = useTheme();
   const styles = {
@@ -32,7 +34,8 @@ function Home() {
   const [selectedCategory, setSelectedCategory] = useState("Personal");
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [imp, setImp] = useState(false);
+  const [searchCategory, setSearchCategory] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
 
   const inputRef = useRef(null);
 
@@ -47,15 +50,15 @@ function Home() {
     const restoredTodos = savedTodoTexts.map((text, index) => ({
       id: Date.now() + index,
       text,
-      completed: false,
-      category: "Work",
+      completed: true,
+      category: "Personal",
     }));
     setTodos(restoredTodos);
 
     localStorage.setItem("abc", JSON.stringify(restoredTodos));
 
     const a = JSON.parse(localStorage.getItem("abc"));
-    console.log("savedTodo: " + savedTodoTexts + " this is a " + a);
+    console.log("savedTodo: " + savedTodoTexts + " this is a:" + a);
   }, []);
 
   // Focus input on component mount
@@ -66,8 +69,9 @@ function Home() {
   }, []);
 
   //search todos
-  const filteredTodos = todos.filter((todo) =>
-    todo.text.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTodos = todos.filter(
+    (todo) => todo.text.toLowerCase().includes(searchTerm.toLowerCase()),
+    (todo) => todo.category.includes(searchCategory)
   );
 
   // Handle keyboard shortcuts
@@ -89,11 +93,17 @@ function Home() {
         e.preventDefault();
         startListening();
       }
+
+      // Mark imp on Shift
+      if (e.key === "*") {
+        setIsChecked(!isChecked);
+        e.preventDefault();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [inputValue, transcript, editingId, todos]);
+  }, [inputValue, transcript, editingId, todos, isChecked]);
 
   if (!browserSupportsSpeechRecognition) {
     return (
@@ -110,6 +120,8 @@ function Home() {
   const handleEdit = (id) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
     setInputValue(todoToEdit.text);
+    setSelectedCategory(todoToEdit.category);
+    setIsChecked(todoToEdit.imp);
     setEditingId(id);
     inputRef.current?.focus();
   };
@@ -123,19 +135,27 @@ function Home() {
           text: transcript || inputValue,
           completed: false,
           category: selectedCategory,
+          imp: isChecked,
         },
       ]);
     } else {
       setTodos(
         todos.map((todo) =>
           todo.id === editingId
-            ? { ...todo, text: inputValue, category: selectedCategory }
+            ? {
+                ...todo,
+                text: inputValue,
+                category: selectedCategory,
+                imp: isChecked,
+              }
             : todo
         )
       );
       setEditingId(null);
     }
     setInputValue("");
+    setIsChecked(false);
+    setSelectedCategory("Personal");
     resetTranscript();
     inputRef.current?.focus();
   };
@@ -143,10 +163,6 @@ function Home() {
   //select category
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
-  };
-
-  const handleimp = () => {
-    setImp(true);
   };
 
   return (
@@ -178,6 +194,18 @@ function Home() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+          <select
+            className="search-category"
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+          >
+            <option value="Search">Search</option>
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Home">Home</option>
+            <option value="Shopping">Shopping</option>
+          </select>
         </div>
 
         <div className="voice-controls">
@@ -206,13 +234,27 @@ function Home() {
             onChange={(e) => setInputValue(e.target.value)}
           />
 
-          <div className="checkbox">
-            <input
-              type="checkbox"
-              // checked={todo.imp}
-              className="complete-checkbox"
-              onChange={handleimp}
-            />
+          <div className="delayed-hover">
+            <div
+              onClick={() => setIsChecked(!isChecked)}
+              value={isChecked}
+              style={{
+                width: "20px",
+                height: "20px",
+                border: "2px solid #4A90E2",
+                borderRadius: "4px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                backgroundColor: isChecked ? "#4A90E2" : "transparent",
+                color: isChecked ? "white" : "transparent",
+              }}
+            >
+              {isChecked && "✓"}
+            </div>
+
+            <p class="delayed-text">Important!</p>
           </div>
 
           <div className="category">
@@ -245,10 +287,11 @@ function Home() {
           {filteredTodos.map((todo) => (
             <div
               className={`todo-item ${todo.completed ? "completed" : ""} ${
-                setImp ? "red" : ""
+                todo.imp ? "red" : ""
               }`}
               key={todo.id}
             >
+           <p> { format(new Date(), 'MMMM do yyyy, h:mm:ss a')}</p> 
               <li className="todo-text">{todo.text}</li>
 
               <p className="todo-category">{todo.category}</p>

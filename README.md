@@ -1,9 +1,6 @@
 <!-- dark mode
 
-Priority Levels – checkbox with red bg.
-
 Search & Filter – Find tasks quickly by date, or tag. -->
-
 
 <h1> ✅ React To-Do App with Authentication </h1>
 
